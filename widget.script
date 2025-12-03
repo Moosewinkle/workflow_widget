@@ -1,0 +1,115 @@
+(() => {
+  // 🔗 Replace this with your real n8n webhook URL
+  const WEBHOOK_URL = "https://your-n8n-instance.com/webhook/transcription-workflow";
+
+  const widget = document.getElementById("ytw-widget");
+  const toggleButton = document.getElementById("ytw-toggle");
+  const panel = document.getElementById("ytw-panel");
+  const form = document.getElementById("ytw-form");
+  const submitButton = document.getElementById("ytw-submit");
+  const spinner = document.getElementById("ytw-spinner");
+  const statusEl = document.getElementById("ytw-status");
+  const channelInput = document.getElementById("ytw-channel-id");
+  const emailInput = document.getElementById("ytw-email");
+
+  if (!widget) return;
+
+  // Toggle open/close
+  toggleButton.addEventListener("click", () => {
+    const isOpen = !panel.hasAttribute("hidden");
+    if (isOpen) {
+      panel.setAttribute("hidden", "hidden");
+      toggleButton.setAttribute("aria-expanded", "false");
+    } else {
+      panel.removeAttribute("hidden");
+      toggleButton.setAttribute("aria-expanded", "true");
+      channelInput.focus();
+    }
+  });
+
+  // Basic email validation
+  function isValidEmail(email) {
+    // Simple regexp; n8n can do further validation if needed
+    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+  }
+
+  function setLoading(isLoading) {
+    if (isLoading) {
+      submitButton.setAttribute("disabled", "disabled");
+      spinner.classList.add("ytw-spinner--visible");
+    } else {
+      submitButton.removeAttribute("disabled");
+      spinner.classList.remove("ytw-spinner--visible");
+    }
+  }
+
+  function setStatus(message, type) {
+    statusEl.textContent = message || "";
+    statusEl.classList.remove("ytw-status--error", "ytw-status--success");
+    if (type === "error") {
+      statusEl.classList.add("ytw-status--error");
+    } else if (type === "success") {
+      statusEl.classList.add("ytw-status--success");
+    }
+  }
+
+  form.addEventListener("submit", async (event) => {
+    event.preventDefault();
+    setStatus("", null);
+
+    const ytChannelId = channelInput.value.trim();
+    const email = emailInput.value.trim();
+
+    if (!ytChannelId) {
+      setStatus("Please enter a YouTube Channel ID.", "error");
+      channelInput.focus();
+      return;
+    }
+
+    if (!email || !isValidEmail(email)) {
+      setStatus("Please enter a valid email address.", "error");
+      emailInput.focus();
+      return;
+    }
+
+    const payload = {
+      YT_Channel_ID: ytChannelId,
+      email_Address: email
+    };
+
+    setLoading(true);
+
+    try {
+      const response = await fetch(WEBHOOK_URL, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify(payload)
+      });
+
+      if (!response.ok) {
+        throw new Error(`Request failed with status ${response.status}`);
+      }
+
+      // Optionally read JSON/text from n8n if you plan to handle it on the front end
+      // const data = await response.json();
+
+      setStatus(
+        "Got it! Your workflow is running. Check your inbox in a moment for the insights.",
+        "success"
+      );
+
+      // Reset form values but keep panel open so user sees status
+      form.reset();
+    } catch (error) {
+      console.error("Error sending webhook:", error);
+      setStatus(
+        "Something went wrong triggering the workflow. Please try again, or contact us if it keeps happening.",
+        "error"
+      );
+    } finally {
+      setLoading(false);
+    }
+  });
+})();
