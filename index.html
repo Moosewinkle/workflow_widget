@@ -1,1 +1,72 @@
 
+<!-- AI YouTube Workflow Widget -->
+
+<!-- 1. Load the CSS from GitHub Pages -->
+<link 
+  rel="stylesheet" 
+  href="https://moosewinkle.github.io/widget_workflow/widget.css"
+/>
+
+<!-- 2. Widget HTML -->
+<div class="ytw-widget" id="ytw-widget">
+  <button class="ytw-toggle" id="ytw-toggle" aria-expanded="false" aria-controls="ytw-panel">
+    <span class="ytw-toggle-icon" aria-hidden="true">⚙️</span>
+    <span class="ytw-toggle-text">Try the AI workflow</span>
+  </button>
+
+  <div class="ytw-panel" id="ytw-panel" hidden>
+    <div class="ytw-panel-header">
+      <h2 class="ytw-title">Try our YouTube Channel Insights Automation</h2>
+      <p class="ytw-subtitle">
+        Enter a YouTube <strong>Channel ID</strong> and your email. 
+        We’ll run the workflow and send insights to your inbox.
+      </p>
+    </div>
+
+    <form class="ytw-form" id="ytw-form" novalidate>
+      <div class="ytw-field">
+        <label for="ytw-channel-id" class="ytw-label">YouTube Channel ID</label>
+        <input
+          type="text"
+          id="ytw-channel-id"
+          name="yt_channel_id"
+          class="ytw-input"
+          placeholder="e.g. UC_x5XG1OV2P6uZZ5FSM9Ttw"
+          required
+        />
+        <small class="ytw-help">
+          Paste the channel ID (not the full URL). We’ll use it to fetch video transcripts.
+        </small>
+      </div>
+
+      <div class="ytw-field">
+        <label for="ytw-email" class="ytw-label">Email address</label>
+        <input
+          type="email"
+          id="ytw-email"
+          name="email_address"
+          class="ytw-input"
+          placeholder="you@example.com"
+          required
+        />
+        <small class="ytw-help">
+          We’ll send the insights report to this email.
+        </small>
+      </div>
+
+      <div class="ytw-footer">
+        <button type="submit" class="ytw-submit" id="ytw-submit">
+          <span class="ytw-submit-text">Run the workflow</span>
+          <span class="ytw-spinner" id="ytw-spinner" aria-hidden="true"></span>
+        </button>
+        <p class="ytw-status" id="ytw-status" role="status" aria-live="polite"></p>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- 3. Load the JS from GitHub Pages -->
+<script 
+  src="https://moosewinkle.github.io/widget_workflow/widget.js" 
+  defer
+></script>
